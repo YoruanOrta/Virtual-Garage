@@ -1,0 +1,171 @@
+{
+    "modifications": {
+      "engine": {
+        "turbo": {
+          "name": "Turbocharger",
+          "category": "Engine",
+          "hpGain": 45,
+          "price": 2500,
+          "description": "Increases engine power by forcing more air into combustion chambers",
+          "compatibility": ["naturally_aspirated"],
+          "model3D": "/models/parts/turbo.glb"
+        },
+        "supercharger": {
+          "name": "Supercharger",
+          "category": "Engine",
+          "hpGain": 60,
+          "price": 4500,
+          "description": "Mechanically driven forced induction system",
+          "compatibility": ["naturally_aspirated"],
+          "model3D": "/models/parts/supercharger.glb"
+        },
+        "cold_air_intake": {
+          "name": "Cold Air Intake",
+          "category": "Engine",
+          "hpGain": 8,
+          "price": 300,
+          "description": "Improves airflow to engine for better combustion",
+          "compatibility": ["all"],
+          "model3D": "/models/parts/intake.glb"
+        },
+        "intercooler": {
+          "name": "Intercooler",
+          "category": "Engine",
+          "hpGain": 15,
+          "price": 800,
+          "description": "Cools compressed air from turbo/supercharger",
+          "compatibility": ["turbocharged", "supercharged"],
+          "model3D": "/models/parts/intercooler.glb"
+        },
+        "performance_chip": {
+          "name": "Performance ECU Tune",
+          "category": "Engine",
+          "hpGain": 25,
+          "price": 600,
+          "description": "Optimizes engine mapping for better performance",
+          "compatibility": ["all"],
+          "model3D": null
+        }
+      },
+      "exhaust": {
+        "cat_back_exhaust": {
+          "name": "Cat-Back Exhaust System",
+          "category": "Exhaust",
+          "hpGain": 12,
+          "price": 800,
+          "description": "Performance exhaust from catalytic converter back",
+          "compatibility": ["all"],
+          "model3D": "/models/parts/catback_exhaust.glb"
+        },
+        "headers": {
+          "name": "Performance Headers",
+          "category": "Exhaust",
+          "hpGain": 18,
+          "price": 1200,
+          "description": "Improved exhaust manifold for better flow",
+          "compatibility": ["all"],
+          "model3D": "/models/parts/headers.glb"
+        },
+        "full_exhaust": {
+          "name": "Full Exhaust System",
+          "category": "Exhaust",
+          "hpGain": 28,
+          "price": 2200,
+          "description": "Complete performance exhaust system",
+          "compatibility": ["all"],
+          "model3D": "/models/parts/full_exhaust.glb"
+        }
+      },
+      "aerodynamics": {
+        "front_splitter": {
+          "name": "Front Splitter",
+          "category": "Aerodynamics",
+          "hpGain": 0,
+          "price": 500,
+          "description": "Improves front downforce and aerodynamics",
+          "compatibility": ["all"],
+          "model3D": "/models/parts/front_splitter.glb"
+        },
+        "rear_wing": {
+          "name": "Rear Wing Spoiler",
+          "category": "Aerodynamics",
+          "hpGain": 0,
+          "price": 800,
+          "description": "Provides rear downforce at high speeds",
+          "compatibility": ["all"],
+          "model3D": "/models/parts/rear_wing.glb"
+        },
+        "side_skirts": {
+          "name": "Side Skirts",
+          "category": "Aerodynamics",
+          "hpGain": 0,
+          "price": 400,
+          "description": "Improves airflow along vehicle sides",
+          "compatibility": ["all"],
+          "model3D": "/models/parts/side_skirts.glb"
+        },
+        "rear_diffuser": {
+          "name": "Rear Diffuser",
+          "category": "Aerodynamics",
+          "hpGain": 0,
+          "price": 600,
+          "description": "Manages airflow under rear of vehicle",
+          "compatibility": ["all"],
+          "model3D": "/models/parts/rear_diffuser.glb"
+        }
+      },
+      "wheels": {
+        "performance_wheels_17": {
+          "name": "17\" Performance Wheels",
+          "category": "Wheels",
+          "hpGain": 0,
+          "price": 1200,
+          "description": "Lightweight 17-inch performance wheels",
+          "compatibility": ["all"],
+          "model3D": "/models/parts/wheels_17.glb"
+        },
+        "performance_wheels_18": {
+          "name": "18\" Performance Wheels",
+          "category": "Wheels",
+          "hpGain": 0,
+          "price": 1500,
+          "description": "Lightweight 18-inch performance wheels",
+          "compatibility": ["all"],
+          "model3D": "/models/parts/wheels_18.glb"
+        },
+        "racing_wheels_19": {
+          "name": "19\" Racing Wheels",
+          "category": "Wheels",
+          "hpGain": 0,
+          "price": 2000,
+          "description": "Ultra-lightweight 19-inch racing wheels",
+          "compatibility": ["sports_cars"],
+          "model3D": "/models/parts/wheels_19.glb"
+        }
+      }
+    },
+    "colors": {
+      "solid": {
+        "white": { "name": "Pearl White", "hex": "#FFFFFF", "price": 0 },
+        "black": { "name": "Jet Black", "hex": "#000000", "price": 0 },
+        "red": { "name": "Racing Red", "hex": "#FF0000", "price": 200 },
+        "blue": { "name": "Deep Blue", "hex": "#0066CC", "price": 200 },
+        "yellow": { "name": "Bright Yellow", "hex": "#FFD700", "price": 300 },
+        "green": { "name": "Forest Green", "hex": "#228B22", "price": 200 },
+        "orange": { "name": "Sunset Orange", "hex": "#FF6600", "price": 300 },
+        "purple": { "name": "Royal Purple", "hex": "#6A0DAD", "price": 400 },
+        "silver": { "name": "Metallic Silver", "hex": "#C0C0C0", "price": 150 },
+        "gray": { "name": "Charcoal Gray", "hex": "#36454F", "price": 100 }
+      },
+      "metallic": {
+        "gold": { "name": "Metallic Gold", "hex": "#DAA520", "price": 800 },
+        "bronze": { "name": "Metallic Bronze", "hex": "#CD7F32", "price": 600 },
+        "copper": { "name": "Metallic Copper", "hex": "#B87333", "price": 700 }
+      },
+      "matte": {
+        "matte_black": { "name": "Matte Black", "hex": "#1C1C1C", "price": 1000 },
+        "matte_white": { "name": "Matte White", "hex": "#F5F5F5", "price": 1000 },
+        "matte_gray": { "name": "Matte Gray", "hex": "#808080", "price": 900 }
+      }
+    }
+  }
