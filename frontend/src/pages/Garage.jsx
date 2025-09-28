@@ -5,8 +5,9 @@ import styled from 'styled-components';
 
 const GarageContainer = styled.div`
   min-height: 100vh;
-  padding: ${({ theme }) => theme.spacing.xl} ${({ theme }) => theme.spacing.md}; // Reducir padding top
-  background: ${({ theme }) => theme.colors.background};
+  width: 100vw;
+  padding: clamp(160px, 18vh, 180px) clamp(16px, 4vw, 24px) clamp(32px, 5vh, 48px);
+  background: ${({ theme }) => theme.colors.gradient.dark};
   position: relative;
 
   &::before {
@@ -18,13 +19,14 @@ const GarageContainer = styled.div`
     bottom: 0;
     background: 
       radial-gradient(circle at 25% 25%, ${({ theme }) => theme.colors.primary}08 0%, transparent 50%),
-      radial-gradient(circle at 75% 75%, ${({ theme }) => theme.colors.accent}05 0%, transparent 50%);
+      radial-gradient(circle at 75% 75%, ${({ theme }) => theme.colors.secondary}05 0%, transparent 50%);
     pointer-events: none;
   }
 `;
 
 const Content = styled.div`
-  max-width: 1400px;
+  width: 100%;
+  max-width: clamp(1200px, 95vw, 1600px);
   margin: 0 auto;
   position: relative;
   z-index: 2;
@@ -32,27 +34,23 @@ const Content = styled.div`
 
 const Header = styled.div`
   text-align: center;
-  margin-bottom: ${({ theme }) => theme.spacing['4xl']};
+  margin-bottom: clamp(32px, 6vh, 48px);
 `;
 
 const Title = styled.h1`
   font-family: ${({ theme }) => theme.typography.heading};
-  font-size: ${({ theme }) => theme.typography.sizes['4xl']};
+  font-size: clamp(2rem, 6vw, 4rem);
   font-weight: ${({ theme }) => theme.typography.weights.bold};
   background: ${({ theme }) => theme.colors.gradient.gaming};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  margin-bottom: clamp(12px, 2vh, 16px);
   text-shadow: 0 0 30px rgba(255, 107, 0, 0.3);
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    font-size: ${({ theme }) => theme.typography.sizes['3xl']};
-  }
 `;
 
 const Subtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.sizes.lg};
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
   color: ${({ theme }) => theme.colors.textSecondary};
   max-width: 600px;
   margin: 0 auto;
@@ -61,19 +59,20 @@ const Subtitle = styled.p`
 
 const GarageStats = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: ${({ theme }) => theme.spacing.lg};
-  margin-bottom: ${({ theme }) => theme.spacing['3xl']};
+  grid-template-columns: repeat(auto-fit, minmax(clamp(200px, 20vw, 250px), 1fr));
+  gap: clamp(16px, 3vw, 24px);
+  margin-bottom: clamp(32px, 6vh, 48px);
 `;
 
 const StatCard = styled.div`
   background: ${({ theme }) => theme.colors.surface};
-  padding: ${({ theme }) => theme.spacing.xl};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  border: 1px solid ${({ theme }) => theme.colors.card};
+  padding: clamp(20px, 4vw, 24px);
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  border: 2px solid ${({ theme }) => theme.colors.border};
   text-align: center;
   position: relative;
   overflow: hidden;
+  transition: all 0.3s ease;
 
   &::before {
     content: '';
@@ -84,32 +83,39 @@ const StatCard = styled.div`
     height: 3px;
     background: ${({ $color, theme }) => $color || theme.colors.primary};
   }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: ${({ theme }) => theme.shadows.lg};
+  }
 `;
 
 const StatValue = styled.div`
   font-family: ${({ theme }) => theme.typography.heading};
-  font-size: ${({ theme }) => theme.typography.sizes['3xl']};
+  font-size: clamp(1.8rem, 5vw, 3rem);
   font-weight: ${({ theme }) => theme.typography.weights.bold};
   color: ${({ $color, theme }) => $color || theme.colors.primary};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  margin-bottom: clamp(8px, 1vh, 12px);
+  line-height: 1;
 `;
 
 const StatLabel = styled.div`
   color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: ${({ theme }) => theme.typography.sizes.sm};
+  font-size: clamp(0.75rem, 2vw, 0.9rem);
   text-transform: uppercase;
   letter-spacing: 1px;
+  font-weight: ${({ theme }) => theme.typography.weights.medium};
 `;
 
 const ActionsBar = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  margin-bottom: clamp(24px, 4vh, 32px);
   flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.md};
+  gap: clamp(12px, 2vw, 16px);
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+  @media (max-width: 768px) {
     flex-direction: column;
     align-items: stretch;
   }
@@ -117,62 +123,75 @@ const ActionsBar = styled.div`
 
 const FilterOptions = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.spacing.md};
+  gap: clamp(8px, 1.5vw, 12px);
   align-items: center;
   flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+  }
 `;
 
 const FilterButton = styled.button`
   background: ${({ $active, theme }) => 
-    $active ? theme.colors.primary : theme.colors.card};
+    $active ? theme.colors.primary : theme.colors.surface};
   color: ${({ $active, theme }) => 
     $active ? 'white' : theme.colors.textSecondary};
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  font-size: ${({ theme }) => theme.typography.sizes.sm};
+  padding: clamp(8px, 1.5vh, 12px) clamp(12px, 2.5vw, 16px);
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
   font-weight: ${({ theme }) => theme.typography.weights.medium};
-  transition: all ${({ theme }) => theme.transitions.fast};
-  border: 1px solid ${({ $active, theme }) => 
-    $active ? theme.colors.primary : 'transparent'};
+  transition: all 0.3s ease;
+  border: 2px solid ${({ $active, theme }) => 
+    $active ? theme.colors.primary : theme.colors.border};
+  cursor: pointer;
 
   &:hover {
     background: ${({ theme }) => theme.colors.primary};
     color: white;
+    border-color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
 const BuildButton = styled.button`
-  background: ${({ theme }) => theme.colors.gradient.primary};
+  background: ${({ theme }) => theme.colors.primary};
   color: white;
-  padding: ${({ theme }) => theme.spacing.md} ${({ theme }) => theme.spacing.xl};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  padding: clamp(12px, 2vh, 16px) clamp(20px, 4vw, 32px);
+  border-radius: ${({ theme }) => theme.borderRadius.full};
   font-family: ${({ theme }) => theme.typography.heading};
-  font-weight: ${({ theme }) => theme.typography.weights.semibold};
-  font-size: ${({ theme }) => theme.typography.sizes.md};
-  transition: all ${({ theme }) => theme.transitions.medium};
+  font-weight: ${({ theme }) => theme.typography.weights.bold};
+  font-size: clamp(0.9rem, 2.2vw, 1.1rem);
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  box-shadow: ${({ theme }) => theme.shadows.glow};
+  gap: clamp(6px, 1vw, 8px);
+  box-shadow: ${({ theme }) => theme.shadows.lg};
+  border: none;
+  cursor: pointer;
 
   &:hover {
+    background: ${({ theme }) => theme.colors.primaryDark};
     transform: translateY(-2px);
     box-shadow: ${({ theme }) => theme.shadows.xl};
+  }
+
+  @media (max-width: 768px) {
+    justify-content: center;
   }
 `;
 
 const BuildsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: ${({ theme }) => theme.spacing.xl};
+  grid-template-columns: repeat(auto-fit, minmax(clamp(300px, 30vw, 380px), 1fr));
+  gap: clamp(20px, 4vw, 32px);
 `;
 
 const BuildCard = styled.div`
   background: ${({ theme }) => theme.colors.surface};
   border-radius: ${({ theme }) => theme.borderRadius.xl};
-  border: 2px solid ${({ theme }) => theme.colors.card};
+  border: 2px solid ${({ theme }) => theme.colors.border};
   overflow: hidden;
-  transition: all ${({ theme }) => theme.transitions.medium};
+  transition: all 0.3s ease;
   position: relative;
   box-shadow: ${({ theme }) => theme.shadows.md};
 
@@ -183,9 +202,9 @@ const BuildCard = styled.div`
     left: 0;
     right: 0;
     height: 4px;
-    background: ${({ theme }) => theme.colors.gradient.primary};
+    background: ${({ theme }) => theme.colors.primary};
     transform: scaleX(0);
-    transition: transform ${({ theme }) => theme.transitions.medium};
+    transition: transform 0.3s ease;
   }
 
   &:hover {
@@ -200,102 +219,107 @@ const BuildCard = styled.div`
 `;
 
 const BuildHeader = styled.div`
-  padding: ${({ theme }) => theme.spacing.xl};
-  background: ${({ theme }) => theme.colors.card};
+  padding: clamp(20px, 4vw, 24px);
+  background: ${({ theme }) => theme.colors.background};
   position: relative;
 `;
 
 const CarDisplay = styled.div`
-  width: 80px;
-  height: 80px;
+  width: clamp(60px, 12vw, 80px);
+  height: clamp(60px, 12vw, 80px);
   background: ${({ $color, theme }) => $color || theme.colors.primary};
   border-radius: ${({ theme }) => theme.borderRadius.full};
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: ${({ theme }) => theme.typography.sizes['2xl']};
-  margin: 0 auto ${({ theme }) => theme.spacing.md};
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  margin: 0 auto clamp(12px, 2vh, 16px);
   border: 3px solid ${({ theme }) => theme.colors.primary};
   box-shadow: ${({ theme }) => theme.shadows.glow};
 `;
 
 const BuildName = styled.h3`
   font-family: ${({ theme }) => theme.typography.heading};
-  font-size: ${({ theme }) => theme.typography.sizes.lg};
-  font-weight: ${({ theme }) => theme.typography.weights.semibold};
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  font-weight: ${({ theme }) => theme.typography.weights.bold};
   color: ${({ theme }) => theme.colors.text};
   text-align: center;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  margin-bottom: clamp(6px, 1vh, 8px);
 `;
 
 const BuildDate = styled.div`
   text-align: center;
-  font-size: ${({ theme }) => theme.typography.sizes.xs};
-  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 const BuildStats = styled.div`
-  padding: ${({ theme }) => theme.spacing.xl};
+  padding: clamp(16px, 3vw, 20px);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: ${({ theme }) => theme.spacing.lg};
+  gap: clamp(12px, 2vw, 16px);
 `;
 
 const BuildStatItem = styled.div`
   text-align: center;
-  padding: ${({ theme }) => theme.spacing.md};
+  padding: clamp(12px, 2vw, 16px);
   background: ${({ theme }) => theme.colors.background};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  border: 1px solid ${({ theme }) => theme.colors.card};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const BuildStatValue = styled.div`
   font-family: ${({ theme }) => theme.typography.heading};
-  font-size: ${({ theme }) => theme.typography.sizes.xl};
+  font-size: clamp(1.1rem, 3vw, 1.3rem);
   font-weight: ${({ theme }) => theme.typography.weights.bold};
   color: ${({ theme }) => theme.colors.primary};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  margin-bottom: clamp(4px, 0.5vh, 6px);
+  line-height: 1;
 `;
 
 const BuildStatLabel = styled.div`
-  font-size: ${({ theme }) => theme.typography.sizes.xs};
-  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: clamp(0.7rem, 1.6vw, 0.75rem);
+  color: ${({ theme }) => theme.colors.textSecondary};
   text-transform: uppercase;
   letter-spacing: 1px;
+  font-weight: ${({ theme }) => theme.typography.weights.medium};
 `;
 
 const BuildActions = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
+  padding: clamp(16px, 3vw, 20px);
   background: ${({ theme }) => theme.colors.background};
   display: flex;
-  gap: ${({ theme }) => theme.spacing.sm};
+  gap: clamp(8px, 1.5vw, 12px);
 `;
 
 const ActionButton = styled.button`
   flex: 1;
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  font-size: ${({ theme }) => theme.typography.sizes.sm};
+  padding: clamp(10px, 2vh, 14px) clamp(12px, 2.5vw, 16px);
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
   font-weight: ${({ theme }) => theme.typography.weights.medium};
-  transition: all ${({ theme }) => theme.transitions.fast};
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
   
   &.edit {
-    background: ${({ theme }) => theme.colors.gradient.secondary};
+    background: ${({ theme }) => theme.colors.secondary};
     color: white;
     
     &:hover {
+      background: ${({ theme }) => theme.colors.secondaryDark};
       transform: translateY(-1px);
       box-shadow: ${({ theme }) => theme.shadows.md};
     }
   }
   
   &.delete {
-    background: ${({ theme }) => theme.colors.error}20;
-    color: ${({ theme }) => theme.colors.error};
-    border: 1px solid ${({ theme }) => theme.colors.error};
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid #ef4444;
     
     &:hover {
-      background: ${({ theme }) => theme.colors.error};
+      background: #ef4444;
       color: white;
     }
   }
@@ -303,29 +327,30 @@ const ActionButton = styled.button`
 
 const EmptyState = styled.div`
   text-align: center;
-  padding: ${({ theme }) => theme.spacing['5xl']};
+  padding: clamp(48px, 10vh, 80px) clamp(20px, 4vw, 32px);
   background: ${({ theme }) => theme.colors.surface};
   border-radius: ${({ theme }) => theme.borderRadius.xl};
-  border: 2px dashed ${({ theme }) => theme.colors.card};
+  border: 2px dashed ${({ theme }) => theme.colors.border};
 `;
 
 const EmptyIcon = styled.div`
-  font-size: ${({ theme }) => theme.typography.sizes['6xl']};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  font-size: clamp(3rem, 8vw, 5rem);
+  margin-bottom: clamp(20px, 4vh, 32px);
   opacity: 0.5;
 `;
 
 const EmptyTitle = styled.h3`
   font-family: ${({ theme }) => theme.typography.heading};
-  font-size: ${({ theme }) => theme.typography.sizes['2xl']};
+  font-size: clamp(1.5rem, 4vw, 2rem);
   color: ${({ theme }) => theme.colors.text};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  margin-bottom: clamp(12px, 2vh, 16px);
 `;
 
 const EmptyDescription = styled.p`
   color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  margin-bottom: clamp(24px, 4vh, 32px);
   line-height: 1.6;
+  font-size: clamp(0.9rem, 2.2vw, 1rem);
 `;
 
 const Garage = () => {
@@ -414,26 +439,26 @@ const Garage = () => {
     <GarageContainer>
       <Content>
         <Header>
-          <Title className="animate-slideUp">🏠 My Garage</Title>
-          <Subtitle className="animate-slideUp">
+          <Title>🏠 My Garage</Title>
+          <Subtitle>
             Your collection of custom car builds and modifications
           </Subtitle>
         </Header>
 
         <GarageStats>
-          <StatCard className="animate-slideUp" $color="#FF6B00">
+          <StatCard $color="#FF6B00">
             <StatValue $color="#FF6B00">{stats.totalBuilds}</StatValue>
             <StatLabel>Total Builds</StatLabel>
           </StatCard>
-          <StatCard className="animate-slideUp" $color="#00D4FF">
+          <StatCard $color="#00D4FF">
             <StatValue $color="#00D4FF">{stats.avgHP}</StatValue>
             <StatLabel>Avg Horsepower</StatLabel>
           </StatCard>
-          <StatCard className="animate-slideUp" $color="#00FF88">
+          <StatCard $color="#00FF88">
             <StatValue $color="#00FF88">{formatPrice(stats.totalCost)}</StatValue>
             <StatLabel>Total Investment</StatLabel>
           </StatCard>
-          <StatCard className="animate-slideUp" $color="#FFD700">
+          <StatCard $color="#FFD700">
             <StatValue $color="#FFD700">{stats.topHP}</StatValue>
             <StatLabel>Highest HP</StatLabel>
           </StatCard>
@@ -468,7 +493,7 @@ const Garage = () => {
         </ActionsBar>
 
         {filteredBuilds.length === 0 ? (
-          <EmptyState className="animate-slideUp">
+          <EmptyState>
             <EmptyIcon>🚗</EmptyIcon>
             <EmptyTitle>
               {builds.length === 0 ? 'Your garage is empty!' : 'No builds match your filter'}
@@ -489,11 +514,7 @@ const Garage = () => {
         ) : (
           <BuildsGrid>
             {filteredBuilds.map((build, index) => (
-              <BuildCard 
-                key={build.id}
-                className="animate-slideUp"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
+              <BuildCard key={build.id}>
                 <BuildHeader>
                   <CarDisplay $color={build.color}>
                     🚗

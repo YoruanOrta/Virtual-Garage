@@ -84,24 +84,39 @@ const BrandCard = styled.div`
 `;
 
 const BrandLogo = styled.div`
-  width: 80px;
-  height: 80px;
-  background: ${({ theme }) => theme.colors.card};
-  border-radius: ${({ theme }) => theme.borderRadius.full};
+  width: clamp(80px, 15vw, 120px);
+  height: clamp(80px, 15vw, 120px);
+  border-radius: 50%;
+  background: white; // Cambiado a blanco
+  border: 3px solid ${({ theme }) => theme.colors.primary};
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto ${({ theme }) => theme.spacing.lg};
-  font-size: ${({ theme }) => theme.typography.sizes['2xl']};
-  font-weight: ${({ theme }) => theme.typography.weights.bold};
-  color: ${({ theme }) => theme.colors.primary};
-  border: 2px solid ${({ theme }) => theme.colors.primary};
-  transition: all ${({ theme }) => theme.transitions.fast};
-
-  ${BrandCard}:hover & {
-    background: ${({ theme }) => theme.colors.primary};
-    color: white;
-    transform: scale(1.1);
+  margin: 0 auto clamp(16px, 3vh, 24px);
+  transition: all 0.4s ease;
+  box-shadow: ${({ theme }) => theme.shadows.glow};
+  position: relative;
+  overflow: hidden;
+  
+  img {
+    width: 60%;
+    height: 60%;
+    object-fit: contain;
+    filter: brightness(1);
+    transition: all 0.3s ease;
+  }
+  
+  &::after {
+    content: '${({ $fallbackLetter }) => $fallbackLetter || '?'}';
+    position: absolute;
+    font-size: clamp(2rem, 8vw, 3rem);
+    font-weight: ${({ theme }) => theme.typography.weights.bold};
+    color: ${({ theme }) => theme.colors.primary};
+    display: ${({ $hasLogo }) => $hasLogo ? 'none' : 'flex'};
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
   }
 `;
 
@@ -287,8 +302,20 @@ const BrandSelection = () => {
               className="animate-slideUp"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <BrandLogo>
-                {getBrandInitials(brand.name)}
+              <BrandLogo 
+                $hasLogo={brand.logo}
+                $fallbackLetter={brand.name.charAt(0)}
+              >
+                {brand.logo && (
+                  <img 
+                    src={brand.logo} 
+                    alt={`${brand.name} logo`}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.parentElement.setAttribute('data-has-logo', 'false');
+                    }}
+                  />
+                )}
               </BrandLogo>
               <BrandName>{brand.name}</BrandName>
               <BrandInfo>

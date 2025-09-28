@@ -1,148 +1,148 @@
 {
-    "brands": {
-      "toyota": {
-        "name": "Toyota",
-        "logo": "/brands/toyota.png",
-        "models": {
-          "corolla_2024": {
-            "name": "Corolla 2024",
-            "year": 2024,
-            "type": "Sedan",
-            "baseSpecs": {
-              "engine": "2.0L 4-Cylinder",
-              "horsePower": 169,
-              "torque": "151 lb-ft",
-              "transmission": "CVT",
-              "drivetrain": "FWD"
-            },
-            "model3D": "/models/toyota/corolla_2024.glb",
-            "defaultColor": "#FFFFFF"
+  "brands": {
+    "toyota": {
+      "name": "Toyota",
+      "logo": "/images/logos/brands/toyota.svg",
+      "models": {
+        "corolla_2024": {
+          "name": "Corolla 2024",
+          "year": 2024,
+          "type": "Sedan",
+          "baseSpecs": {
+            "engine": "2.0L 4-Cylinder",
+            "horsePower": 169,
+            "torque": "151 lb-ft",
+            "transmission": "CVT",
+            "drivetrain": "FWD"
           },
-          "supra_mk5_2020": {
-            "name": "Supra MK5 2020",
-            "year": 2020,
-            "type": "Sports Car",
-            "baseSpecs": {
-              "engine": "3.0L Twin-Turbo I6",
-              "horsePower": 382,
-              "torque": "368 lb-ft",
-              "transmission": "8-Speed Auto",
-              "drivetrain": "RWD"
-            },
-            "model3D": "/models/toyota/supra_mk5.glb",
-            "defaultColor": "#FF0000"
+          "model3D": "/models/toyota/corolla_2024.glb",
+          "defaultColor": "#FFFFFF"
+        },
+        "supra_mk5_2020": {
+          "name": "Supra MK5 2020",
+          "year": 2020,
+          "type": "Sports Car",
+          "baseSpecs": {
+            "engine": "3.0L Twin-Turbo I6",
+            "horsePower": 382,
+            "torque": "368 lb-ft",
+            "transmission": "8-Speed Auto",
+            "drivetrain": "RWD"
           },
-          "rav4_xle_2023": {
-            "name": "RAV4 XLE 2023",
-            "year": 2023,
-            "type": "SUV",
-            "baseSpecs": {
-              "engine": "2.5L 4-Cylinder",
-              "horsePower": 203,
-              "torque": "184 lb-ft",
-              "transmission": "8-Speed Auto",
-              "drivetrain": "AWD"
-            },
-            "model3D": "/models/toyota/rav4_2023.glb",
-            "defaultColor": "#000000"
-          }
+          "model3D": "/models/toyota/supra_mk5.glb",
+          "defaultColor": "#FF0000"
+        },
+        "rav4_xle_2023": {
+          "name": "RAV4 XLE 2023",
+          "year": 2023,
+          "type": "SUV",
+          "baseSpecs": {
+            "engine": "2.5L 4-Cylinder",
+            "horsePower": 203,
+            "torque": "184 lb-ft",
+            "transmission": "8-Speed Auto",
+            "drivetrain": "AWD"
+          },
+          "model3D": "/models/toyota/rav4_2023.glb",
+          "defaultColor": "#000000"
         }
-      },
-      "honda": {
-        "name": "Honda",
-        "logo": "/brands/honda.png",
-        "models": {
-          "civic_si_2024": {
-            "name": "Civic Si 2024",
-            "year": 2024,
-            "type": "Sport Compact",
-            "baseSpecs": {
-              "engine": "1.5L Turbo 4-Cylinder",
-              "horsePower": 200,
-              "torque": "192 lb-ft",
-              "transmission": "6-Speed Manual",
-              "drivetrain": "FWD"
-            },
-            "model3D": "/models/honda/civic_si_2024.glb",
-            "defaultColor": "#0066CC"
+      }
+    },
+    "honda": {
+      "name": "Honda",
+      "logo": "/images/logos/brands/honda.svg",
+      "models": {
+        "civic_si_2024": {
+          "name": "Civic Si 2024",
+          "year": 2024,
+          "type": "Sport Compact",
+          "baseSpecs": {
+            "engine": "1.5L Turbo 4-Cylinder",
+            "horsePower": 200,
+            "torque": "192 lb-ft",
+            "transmission": "6-Speed Manual",
+            "drivetrain": "FWD"
           },
-          "accord_sport_2024": {
-            "name": "Accord Sport 2024",
-            "year": 2024,
-            "type": "Sedan",
-            "baseSpecs": {
-              "engine": "1.5L Turbo 4-Cylinder",
-              "horsePower": 192,
-              "torque": "192 lb-ft",
-              "transmission": "CVT",
-              "drivetrain": "FWD"
-            },
-            "model3D": "/models/honda/accord_2024.glb",
-            "defaultColor": "#SILVER"
+          "model3D": "/models/honda/civic_si_2024.glb",
+          "defaultColor": "#0066CC"
+        },
+        "accord_sport_2024": {
+          "name": "Accord Sport 2024",
+          "year": 2024,
+          "type": "Sedan",
+          "baseSpecs": {
+            "engine": "1.5L Turbo 4-Cylinder",
+            "horsePower": 192,
+            "torque": "192 lb-ft",
+            "transmission": "CVT",
+            "drivetrain": "FWD"
           },
-          "nsx_2022": {
-            "name": "NSX 2022",
-            "year": 2022,
-            "type": "Supercar",
-            "baseSpecs": {
-              "engine": "3.5L Twin-Turbo V6 Hybrid",
-              "horsePower": 573,
-              "torque": "476 lb-ft",
-              "transmission": "9-Speed Auto",
-              "drivetrain": "AWD"
-            },
-            "model3D": "/models/honda/nsx_2022.glb",
-            "defaultColor": "#FF6600"
-          }
+          "model3D": "/models/honda/accord_2024.glb",
+          "defaultColor": "#SILVER"
+        },
+        "nsx_2022": {
+          "name": "NSX 2022",
+          "year": 2022,
+          "type": "Supercar",
+          "baseSpecs": {
+            "engine": "3.5L Twin-Turbo V6 Hybrid",
+            "horsePower": 573,
+            "torque": "476 lb-ft",
+            "transmission": "9-Speed Auto",
+            "drivetrain": "AWD"
+          },
+          "model3D": "/models/honda/nsx_2022.glb",
+          "defaultColor": "#FF6600"
         }
-      },
-      "ford": {
-        "name": "Ford",
-        "logo": "/brands/ford.png",
-        "models": {
-          "mustang_gt_2024": {
-            "name": "Mustang GT 2024",
-            "year": 2024,
-            "type": "Muscle Car",
-            "baseSpecs": {
-              "engine": "5.0L V8",
-              "horsePower": 486,
-              "torque": "418 lb-ft",
-              "transmission": "6-Speed Manual",
-              "drivetrain": "RWD"
-            },
-            "model3D": "/models/ford/mustang_gt_2024.glb",
-            "defaultColor": "#FFD700"
+      }
+    },
+    "ford": {
+      "name": "Ford",
+      "logo": "/images/logos/brands/ford.svg",
+      "models": {
+        "mustang_gt_2024": {
+          "name": "Mustang GT 2024",
+          "year": 2024,
+          "type": "Muscle Car",
+          "baseSpecs": {
+            "engine": "5.0L V8",
+            "horsePower": 486,
+            "torque": "418 lb-ft",
+            "transmission": "6-Speed Manual",
+            "drivetrain": "RWD"
           },
-          "f150_raptor_2024": {
-            "name": "F-150 Raptor 2024",
-            "year": 2024,
-            "type": "Pickup Truck",
-            "baseSpecs": {
-              "engine": "3.5L Twin-Turbo V6",
-              "horsePower": 450,
-              "torque": "510 lb-ft",
-              "transmission": "10-Speed Auto",
-              "drivetrain": "4WD"
-            },
-            "model3D": "/models/ford/f150_raptor.glb",
-            "defaultColor": "#000080"
+          "model3D": "/models/ford/mustang_gt_2024.glb",
+          "defaultColor": "#FFD700"
+        },
+        "f150_raptor_2024": {
+          "name": "F-150 Raptor 2024",
+          "year": 2024,
+          "type": "Pickup Truck",
+          "baseSpecs": {
+            "engine": "3.5L Twin-Turbo V6",
+            "horsePower": 450,
+            "torque": "510 lb-ft",
+            "transmission": "10-Speed Auto",
+            "drivetrain": "4WD"
           },
-          "focus_rs_2018": {
-            "name": "Focus RS 2018",
-            "year": 2018,
-            "type": "Hot Hatch",
-            "baseSpecs": {
-              "engine": "2.3L Turbo 4-Cylinder",
-              "horsePower": 350,
-              "torque": "350 lb-ft",
-              "transmission": "6-Speed Manual",
-              "drivetrain": "AWD"
-            },
-            "model3D": "/models/ford/focus_rs.glb",
-            "defaultColor": "#0080FF"
-          }
+          "model3D": "/models/ford/f150_raptor.glb",
+          "defaultColor": "#000080"
+        },
+        "focus_rs_2018": {
+          "name": "Focus RS 2018",
+          "year": 2018,
+          "type": "Hot Hatch",
+          "baseSpecs": {
+            "engine": "2.3L Turbo 4-Cylinder",
+            "horsePower": 350,
+            "torque": "350 lb-ft",
+            "transmission": "6-Speed Manual",
+            "drivetrain": "AWD"
+          },
+          "model3D": "/models/ford/focus_rs.glb",
+          "defaultColor": "#0080FF"
         }
       }
     }
   }
+}
