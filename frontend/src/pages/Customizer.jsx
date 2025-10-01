@@ -1,4 +1,5 @@
-// frontend/src/pages/Customizer.jsx - OPTIMIZADO PARA GPU
+// Professional Redesign - Single Screen Layout
+
 import React, { useState, useEffect, Suspense, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -6,42 +7,35 @@ import ColorPicker from '../components/UI/ColorPicker';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 
-// Preload with aggressive caching
 useGLTF.preload('/models/toyota/toyota_corolla_2020.glb');
 
-// Ultra-lightweight 3D Model Component
 function Car3DModel({ modelPath, color }) {
   const { scene } = useGLTF(modelPath);
+  const bodyObjects = ['Object_14'];
+  const shouldChangeColor = (name) => bodyObjects.includes(name);
   
-  // Optimize model on first load
   const optimizedScene = React.useMemo(() => {
     const clone = scene.clone();
-    
-    // Traverse and optimize
     clone.traverse((child) => {
-      if (child.isMesh) {
-        // Simplify materials
-        if (child.material) {
-          child.material = child.material.clone();
-          
-          // Disable expensive features
-          child.material.needsUpdate = false;
-          child.material.transparent = false;
-          child.material.alphaTest = 0;
-          
-          // Simple color application
-          if (child.material.color) {
+      if (child.isMesh && child.material) {
+        child.material = child.material.clone();
+        child.material.needsUpdate = false;
+        child.material.transparent = false;
+        child.material.alphaTest = 0;
+        
+        if (child.material.color) {
+          if (shouldChangeColor(child.name)) {
             const hexColor = parseInt(color.replace('#', ''), 16);
             child.material.color.setHex(hexColor);
+            child.material.metalness = 0.4;
+            child.material.roughness = 0.3;
+          } else {
+            child.material.metalness = 0.9;
+            child.material.roughness = 0.1;
+            child.material.envMapIntensity = 1.0;
           }
-          
-          // Optimize material properties
-          child.material.metalness = 0;
-          child.material.roughness = 1;
-          child.material.envMapIntensity = 0;
         }
         
-        // Optimize geometry
         if (child.geometry) {
           child.geometry.computeBoundingSphere();
           child.castShadow = false;
@@ -49,7 +43,6 @@ function Car3DModel({ modelPath, color }) {
         }
       }
     });
-    
     return clone;
   }, [scene, color]);
   
@@ -63,286 +56,323 @@ function Car3DModel({ modelPath, color }) {
   );
 }
 
-// Error Boundary Component
 class Canvas3DErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false };
   }
-
   static getDerivedStateFromError(error) {
     return { hasError: true };
   }
-
   componentDidCatch(error, errorInfo) {
     console.error('3D Canvas Error:', error, errorInfo);
-    if (this.props.onError) {
-      this.props.onError(error);
-    }
+    if (this.props.onError) this.props.onError(error);
   }
-
   render() {
-    if (this.state.hasError) {
-      return <CarFallback color={this.props.color} />;
-    }
+    if (this.state.hasError) return <CarFallback color={this.props.color} />;
     return this.props.children;
   }
 }
 
 const Loading3D = () => (
-  <div style={{
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    color: 'white',
-    fontSize: '1.2rem',
-    textAlign: 'center'
-  }}>
-    <div>Loading 3D Model...</div>
-    <div style={{ fontSize: '0.8rem', marginTop: '8px', opacity: 0.7 }}>
-      Optimizing for performance...
-    </div>
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#64748b' }}>
+    Loading...
   </div>
 );
 
-// Fallback Component
 const CarFallback = ({ color }) => (
-  <div style={{
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-    fontSize: '6rem',
-    color: color,
-    transition: 'color 0.3s ease'
-  }}>
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: '4rem', color: color }}>
     🚗
   </div>
 );
 
-const CustomizerContainer = styled.div`
-  min-height: 100vh;
-  width: 100vw;
-  padding: clamp(160px, 18vh, 180px) 0 clamp(32px, 5vh, 48px);
-  background: ${({ theme }) => theme.colors.gradient.dark};
+// ============ STYLED COMPONENTS ============
+
+const PageContainer = styled.div`
+  height: 100vh;
+  background: #0a0e1a;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  overflow: hidden;
 `;
 
-const Content = styled.div`
-  width: 100%;
-  max-width: clamp(1200px, 95vw, 1600px);
-  padding: 0 clamp(16px, 4vw, 24px);
+const TopBar = styled.div`
+  height: 80px;
+  flex-shrink: 0;
+`;
+
+const MainContent = styled.div`
+  flex: 1;
   display: grid;
-  grid-template-columns: 1fr 500px;
-  gap: clamp(24px, 4vw, 48px);
-  
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
-    gap: clamp(16px, 3vw, 24px);
-  }
+  grid-template-columns: 1fr 380px;
+  gap: 0;
+  overflow: hidden;
 `;
 
-const MainArea = styled.div`
+const LeftSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: clamp(16px, 2vh, 24px);
-  position: relative;
+  padding: 24px;
+  gap: 16px;
+  overflow: hidden;
+`;
+
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
 `;
 
 const BackButton = styled.button`
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 10;
-  background: ${({ theme }) => theme.colors.surface};
-  color: ${({ theme }) => theme.colors.text};
-  border: 2px solid ${({ theme }) => theme.colors.border};
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  font-weight: ${({ theme }) => theme.typography.weights.medium};
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #1e293b;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.fast};
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  transition: all 0.2s;
 
   &:hover {
-    background: ${({ theme }) => theme.colors.accent};
+    background: #1e293b;
     color: white;
-    transform: translateY(-2px);
   }
 `;
 
-const CarTitle = styled.h1`
-  font-family: ${({ theme }) => theme.typography.heading};
-  font-size: clamp(1.75rem, 5vw, 2.5rem);
-  font-weight: ${({ theme }) => theme.typography.weights.bold};
-  color: ${({ theme }) => theme.colors.text};
-  margin: clamp(32px, 6vh, 48px) 0 0 0;
-  text-align: center;
-  background: ${({ theme }) => theme.colors.gradient.primary};
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+const Title = styled.h1`
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
 `;
 
-const CarViewer = styled.div`
-  background: linear-gradient(135deg, #2a2d3a 0%, #1e1f2e 100%);
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  border: 2px solid ${({ theme }) => theme.colors.border};
-  padding: 0;
-  height: clamp(400px, 80vh, 650px);
-  display: flex;
-  flex-direction: column;
+const PowerBadge = styled.div`
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+`;
+
+const ContentGrid = styled.div`
+  flex: 1;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  overflow: hidden;
+`;
+
+const ViewerCard = styled.div`
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-`;
-
-const VehicleSpecs = styled.div`
-  position: absolute;
-  top: clamp(16px, 3vh, 24px);
-  right: clamp(16px, 3vh, 24px);
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(10px);
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  padding: clamp(12px, 2vh, 16px);
-  z-index: 5;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-`;
-
-const SpecItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: clamp(8px, 2vw, 12px);
-  margin-bottom: clamp(4px, 1vh, 8px);
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-`;
-
-const SpecLabel = styled.span`
-  color: rgba(255, 255, 255, 0.7);
-  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-  font-weight: ${({ theme }) => theme.typography.weights.medium};
-`;
-
-const SpecValue = styled.span`
-  color: ${({ $highlight, theme }) => $highlight ? theme.colors.accent : 'white'};
-  font-weight: ${({ theme }) => theme.typography.weights.semibold};
-  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
 `;
 
 const Canvas3D = styled.div`
-  flex: 1;
-  position: relative;
   width: 100%;
   height: 100%;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
 `;
 
-const HPGainBanner = styled.div`
+const StatsOverlay = styled.div`
   position: absolute;
-  bottom: clamp(16px, 3vh, 24px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: ${({ theme }) => theme.colors.gradient.accent};
-  color: white;
-  padding: clamp(8px, 1.5vh, 12px) clamp(16px, 3vw, 24px);
-  border-radius: ${({ theme }) => theme.borderRadius.full};
-  font-weight: ${({ theme }) => theme.typography.weights.bold};
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  box-shadow: 0 4px 16px rgba(255, 107, 53, 0.4);
-  z-index: 5;
-  animation: pulse 2s infinite;
-
-  @keyframes pulse {
-    0%, 100% { transform: translateX(-50%) scale(1); }
-    50% { transform: translateX(-50%) scale(1.05); }
-  }
+  top: 20px;
+  right: 20px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 150px;
+  z-index: 10;
 `;
 
-const Sidebar = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  border: 2px solid ${({ theme }) => theme.colors.border};
-  padding: clamp(16px, 3vh, 24px);
-  height: fit-content;
-  max-height: 80vh;
-  overflow-y: auto;
-  
-  @media (max-width: 1024px) {
-    order: -1;
-    max-height: none;
-  }
-`;
-
-const Section = styled.div`
-  margin-bottom: clamp(24px, 4vh, 32px);
+const StatRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
   
   &:last-child {
     margin-bottom: 0;
+  }
+`;
+
+const StatLabel = styled.span`
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+`;
+
+const StatValue = styled.span`
+  color: ${({ $primary }) => $primary ? '#f97316' : 'white'};
+  font-size: 14px;
+  font-weight: 600;
+`;
+
+const ChartCard = styled.div`
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ChartTitle = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 16px;
+`;
+
+const MiniChart = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 12px 0;
+`;
+
+const Bar = styled.div`
+  flex: 1;
+  height: ${({ $height }) => $height}%;
+  background: ${({ $primary }) => $primary ? 'linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)' : 'linear-gradient(180deg, #f97316 0%, #ea580c 100%)'};
+  border-radius: 4px 4px 0 0;
+  position: relative;
+  transition: height 0.3s;
+`;
+
+const ChartStats = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid #1e293b;
+`;
+
+const ChartStat = styled.div`
+  text-align: center;
+`;
+
+const ChartStatLabel = styled.div`
+  font-size: 10px;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+`;
+
+const ChartStatValue = styled.div`
+  font-size: 16px;
+  font-weight: 700;
+  color: ${({ $color }) => $color || 'white'};
+`;
+
+const RightSidebar = styled.div`
+  background: #0f172a;
+  border-left: 1px solid #1e293b;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #0a0e1a;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #1e293b;
+    border-radius: 3px;
+  }
+`;
+
+const SidebarSection = styled.div`
+  padding: 20px;
+  border-bottom: 1px solid #1e293b;
+  
+  &:last-child {
+    border-bottom: none;
   }
 `;
 
 const SectionTitle = styled.h3`
-  font-family: ${({ theme }) => theme.typography.heading};
-  font-size: clamp(1.125rem, 3vw, 1.25rem);
-  font-weight: ${({ theme }) => theme.typography.weights.semibold};
-  color: ${({ theme }) => theme.colors.text};
-  margin-bottom: clamp(12px, 2vh, 16px);
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 4px 0;
 `;
 
-const TabContainer = styled.div`
+const SectionSubtitle = styled.p`
+  font-size: 12px;
+  color: #64748b;
+  margin: 0 0 16px 0;
+`;
+
+const TabsContainer = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.spacing.xs};
-  margin-bottom: clamp(16px, 3vh, 20px);
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  gap: 6px;
+  padding: 4px;
+  background: #1e293b;
+  border-radius: 8px;
+  margin-bottom: 16px;
 `;
 
 const Tab = styled.button`
-  padding: clamp(8px, 1.5vh, 12px) clamp(12px, 2vw, 16px);
-  background: ${({ $active, theme }) => $active ? theme.colors.accent : 'transparent'};
-  color: ${({ $active, theme }) => $active ? 'white' : theme.colors.textMuted};
+  flex: 1;
+  padding: 8px 12px;
+  background: ${({ $active }) => $active ? '#0f172a' : 'transparent'};
+  color: ${({ $active }) => $active ? 'white' : '#94a3b8'};
   border: none;
-  border-radius: ${({ theme }) => theme.borderRadius.md} ${({ theme }) => theme.borderRadius.md} 0 0;
-  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-  font-weight: ${({ theme }) => theme.typography.weights.medium};
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.fast};
+  transition: all 0.2s;
 
   &:hover {
-    background: ${({ $active, theme }) => $active ? theme.colors.accent : theme.colors.border};
-    color: ${({ $active, theme }) => $active ? 'white' : theme.colors.text};
+    color: white;
   }
 `;
 
-const ModificationList = styled.div`
+const ModsList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: clamp(8px, 1.5vh, 12px);
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #1e293b;
+    border-radius: 2px;
+  }
 `;
 
-const ModificationItem = styled.div`
+const ModItem = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: clamp(12px, 2vh, 16px);
-  background: ${({ $selected, theme }) => $selected ? theme.colors.accentLight : theme.colors.cardBg};
-  border: 2px solid ${({ $selected, theme }) => $selected ? theme.colors.accent : theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  transition: all ${({ theme }) => theme.transitions.fast};
+  padding: 12px;
+  background: ${({ $selected }) => $selected ? '#1e293b' : '#0a0e1a'};
+  border: 1px solid ${({ $selected }) => $selected ? '#f97316' : 'transparent'};
+  border-radius: 10px;
   cursor: pointer;
+  transition: all 0.2s;
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.accent};
-    background: ${({ $selected, theme }) => $selected ? theme.colors.accentLight : theme.colors.surface};
+    background: #1e293b;
   }
 `;
 
@@ -351,101 +381,99 @@ const ModInfo = styled.div`
 `;
 
 const ModName = styled.div`
-  font-weight: ${({ theme }) => theme.typography.weights.semibold};
-  color: ${({ theme }) => theme.colors.text};
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  margin-bottom: clamp(2px, 0.5vh, 4px);
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 2px;
 `;
 
 const ModDescription = styled.div`
-  color: ${({ theme }) => theme.colors.textMuted};
-  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  font-size: 11px;
+  color: #64748b;
 `;
 
 const ModDetails = styled.div`
-  text-align: right;
-  margin-left: clamp(8px, 2vw, 12px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin: 0 8px;
 `;
 
 const ModHP = styled.div`
-  color: ${({ theme }) => theme.colors.accent};
-  font-weight: ${({ theme }) => theme.typography.weights.bold};
-  font-size: clamp(0.875rem, 2vw, 1rem);
+  font-size: 13px;
+  font-weight: 700;
+  color: #f97316;
 `;
 
 const ModPrice = styled.div`
-  color: ${({ theme }) => theme.colors.textMuted};
-  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  font-size: 11px;
+  color: #64748b;
 `;
 
-const ToggleSwitch = styled.div`
-  width: clamp(40px, 8vw, 48px);
-  height: clamp(20px, 4vh, 24px);
-  background: ${({ $active, theme }) => $active ? theme.colors.accent : theme.colors.border};
-  border-radius: clamp(10px, 2vh, 12px);
-  position: relative;
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.fast};
-  margin-left: clamp(8px, 2vw, 12px);
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: ${({ $active }) => $active ? 'calc(100% - 22px)' : '2px'};
-    width: clamp(16px, 3.5vw, 20px);
-    height: clamp(16px, 3.5vh, 20px);
-    background: white;
-    border-radius: 50%;
-    transition: all ${({ theme }) => theme.transitions.fast};
-  }
-`;
-
-const BuildSummary = styled.div`
-  background: ${({ theme }) => theme.colors.cardBg};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  padding: clamp(16px, 3vh, 20px);
-  border: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-const SummaryTitle = styled.h4`
-  font-family: ${({ theme }) => theme.typography.heading};
-  color: ${({ theme }) => theme.colors.text};
-  margin-bottom: clamp(12px, 2vh, 16px);
-  font-size: clamp(1rem, 2.5vw, 1.125rem);
-`;
-
-const SummaryRow = styled.div`
+const Checkbox = styled.div`
+  width: 18px;
+  height: 18px;
+  border: 2px solid ${({ $checked }) => $checked ? '#f97316' : '#334155'};
+  background: ${({ $checked }) => $checked ? '#f97316' : 'transparent'};
+  border-radius: 4px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: clamp(8px, 1.5vh, 10px);
+  justify-content: center;
+  flex-shrink: 0;
   
-  &:last-child {
-    margin-bottom: 0;
-    padding-top: clamp(8px, 1.5vh, 10px);
-    border-top: 1px solid ${({ theme }) => theme.colors.border};
-    font-weight: ${({ theme }) => theme.typography.weights.semibold};
-    color: ${({ theme }) => theme.colors.accent};
+  &::after {
+    content: '✓';
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    opacity: ${({ $checked }) => $checked ? 1 : 0};
   }
+`;
+
+const SummaryGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+`;
+
+const SummaryItem = styled.div`
+  background: #0a0e1a;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+`;
+
+const SummaryLabel = styled.div`
+  font-size: 10px;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  font-weight: 600;
+`;
+
+const SummaryValue = styled.div`
+  font-size: 18px;
+  font-weight: 700;
+  color: ${({ $primary }) => $primary ? '#f97316' : 'white'};
 `;
 
 const SaveButton = styled.button`
   width: 100%;
-  background: ${({ theme }) => theme.colors.gradient.primary};
+  padding: 12px;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
   color: white;
   border: none;
-  padding: clamp(12px, 2.5vh, 16px);
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  font-size: clamp(1rem, 2.5vw, 1.125rem);
-  font-weight: ${({ theme }) => theme.typography.weights.semibold};
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.fast};
-  margin-top: clamp(16px, 3vh, 20px);
+  transition: all 0.2s;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(255, 107, 53, 0.3);
+    box-shadow: 0 8px 20px rgba(249, 115, 22, 0.3);
   }
 
   &:active {
@@ -453,13 +481,15 @@ const SaveButton = styled.button`
   }
 `;
 
+// ============ COMPONENT ============
+
 const Customizer = () => {
   const { brandId, modelId } = useParams();
   const navigate = useNavigate();
   
   const [loading, setLoading] = useState(true);
   const [carData, setCarData] = useState(null);
-  const [selectedColor, setSelectedColor] = useState('#FF6B35');
+  const [selectedColor, setSelectedColor] = useState('#f97316');
   const [selectedMods, setSelectedMods] = useState([]);
   const [activeTab, setActiveTab] = useState('engine');
   const [use3D, setUse3D] = useState(false);
@@ -470,21 +500,21 @@ const Customizer = () => {
 
   const modifications = {
     engine: [
-      { id: 'turbo', name: 'Turbocharger', hp: 45, price: 2500, description: 'Improves aerodynamics' },
-      { id: 'supercharger', name: 'Supercharger', hp: 60, price: 3500, description: 'Optimizes air flow' },
-      { id: 'intake', name: 'Cold Air Intake', hp: 8, price: 350, description: 'Optimizes air flow' },
-      { id: 'intercooler', name: 'Intercooler', hp: 15, price: 800, description: 'Improved stability' },
-      { id: 'tune', name: 'ECU Tune', hp: 25, price: 600, description: 'Improves aerodynamics' }
+      { id: 'turbo', name: 'Turbocharger', hp: 45, price: 2500, description: 'Forced induction' },
+      { id: 'supercharger', name: 'Supercharger', hp: 60, price: 3500, description: 'Belt-driven boost' },
+      { id: 'intake', name: 'Cold Air Intake', hp: 8, price: 350, description: 'Better airflow' },
+      { id: 'intercooler', name: 'Intercooler', hp: 15, price: 800, description: 'Cooler air' },
+      { id: 'tune', name: 'ECU Tune', hp: 25, price: 600, description: 'Engine remap' }
     ],
     exhaust: [
-      { id: 'catback', name: 'Cat-Back System', hp: 12, price: 800, description: 'Optimizes air flow' },
-      { id: 'headers', name: 'Performance Headers', hp: 18, price: 1200, description: 'Improves aerodynamics' },
-      { id: 'fullexhaust', name: 'Full Exhaust', hp: 28, price: 2000, description: 'Improved stability' }
+      { id: 'catback', name: 'Cat-Back System', hp: 12, price: 800, description: 'Rear exhaust' },
+      { id: 'headers', name: 'Performance Headers', hp: 18, price: 1200, description: 'Better flow' },
+      { id: 'fullexhaust', name: 'Full Exhaust', hp: 28, price: 2000, description: 'Complete system' }
     ],
     suspension: [
-      { id: 'coilovers', name: 'Coilovers', hp: 0, price: 1500, description: 'Improved stability' },
-      { id: 'sway', name: 'Sway Bars', hp: 0, price: 400, description: 'Improves aerodynamics' },
-      { id: 'struts', name: 'Performance Struts', hp: 0, price: 900, description: 'Improved stability' }
+      { id: 'coilovers', name: 'Coilovers', hp: 0, price: 1500, description: 'Adjustable' },
+      { id: 'sway', name: 'Sway Bars', hp: 0, price: 400, description: 'Less roll' },
+      { id: 'struts', name: 'Performance Struts', hp: 0, price: 900, description: 'Better handling' }
     ]
   };
 
@@ -496,28 +526,19 @@ const Customizer = () => {
   const loadCarData = async () => {
     try {
       const response = await fetch(`http://127.0.0.1:3001/api/cars/brands/${brandId}/models/${modelId}`);
-      
       if (response.ok) {
         const data = await response.json();
         setCarData({
-          name: data.data?.name || `${brandId.charAt(0).toUpperCase() + brandId.slice(1)} Model`,
-          baseHP: data.data?.baseSpecs?.horsePower || 200,
+          name: data.data?.name || 'Corolla 2024',
+          baseHP: data.data?.baseSpecs?.horsePower || 169,
           type: data.data?.type || 'Sedan',
           drivetrain: data.data?.drivetrain || 'FWD',
-          engine: data.data?.baseSpecs?.engine || 'Unknown Engine'
+          engine: data.data?.baseSpecs?.engine || '2.0L'
         });
-      } else {
-        throw new Error('Car not found');
       }
     } catch (error) {
-      console.error('Error loading car data:', error);
-      setCarData({
-        name: `${brandId.charAt(0).toUpperCase() + brandId.slice(1)} Model`,
-        baseHP: 200,
-        type: 'Sedan',
-        drivetrain: 'FWD',
-        engine: 'Unknown Engine'
-      });
+      console.error('Error:', error);
+      setCarData({ name: 'Corolla 2024', baseHP: 169, type: 'Sedan', drivetrain: 'FWD', engine: '2.0L' });
     } finally {
       setLoading(false);
     }
@@ -528,51 +549,27 @@ const Customizer = () => {
       'toyota-corolla_2024': '/models/toyota/toyota_corolla_2020.glb',
       'toyota-supra_mk5_2020': '/models/toyota/toyota_corolla_2020.glb',
     };
-    
     const key = `${brandId}-${modelId}`;
     const path = modelPaths[key];
-    
-    console.log('Checking for model:', key, 'Path:', path, 'Retry:', retryCount);
-    
     if (path) {
       setModelPath(path);
       setUse3D(true);
-      setWebglLost(false);
-      console.log('3D Model enabled for:', key);
-    } else {
-      setUse3D(false);
-      console.log('Using fallback for:', key);
     }
   };
 
   const handleWebGLContextLost = () => {
-    console.log('WebGL context lost, retry count:', retryCount);
     setWebglLost(true);
-    
-    // Auto-retry mechanism with exponential backoff
     if (retryCount < 3) {
-      const timeout = Math.pow(2, retryCount) * 2000; // 2s, 4s, 8s
-      console.log(`Retrying in ${timeout}ms...`);
-      
       setTimeout(() => {
         setRetryCount(prev => prev + 1);
         setWebglLost(false);
         setUse3D(true);
-        console.log('Attempting 3D recovery...');
-      }, timeout);
-    } else {
-      console.log('Max retries reached, staying in fallback mode');
-      setUse3D(false);
+      }, Math.pow(2, retryCount) * 2000);
     }
   };
 
-  const getCategoryIcon = (category) => {
-    const icons = { engine: '⚡', exhaust: '🚀', suspension: '🔧' };
-    return icons[category] || '🔧';
-  };
-
   const calculateFinalHP = () => {
-    let total = carData?.baseHP || 200;
+    let total = carData?.baseHP || 169;
     selectedMods.forEach(modId => {
       Object.values(modifications).forEach(category => {
         const mod = category.find(m => m.id === modId);
@@ -606,13 +603,11 @@ const Customizer = () => {
 
   const toggleModification = (modId) => {
     setSelectedMods(prev => 
-      prev.includes(modId) 
-        ? prev.filter(id => id !== modId)
-        : [...prev, modId]
+      prev.includes(modId) ? prev.filter(id => id !== modId) : [...prev, modId]
     );
   };
 
-  const saveBuild = async () => {
+  const saveBuild = () => {
     try {
       const build = {
         id: Date.now(),
@@ -625,157 +620,129 @@ const Customizer = () => {
         totalCost: calculateTotalCost(),
         createdAt: new Date().toISOString()
       };
-
       const savedBuilds = JSON.parse(localStorage.getItem('virtualGarageBuilds') || '[]');
       savedBuilds.push(build);
       localStorage.setItem('virtualGarageBuilds', JSON.stringify(savedBuilds));
-      
-      alert('Build saved successfully!');
+      alert('Build saved!');
       navigate('/garage');
     } catch (error) {
-      console.error('Error saving build:', error);
-      alert('Error saving build. Please try again.');
+      alert('Error saving');
     }
   };
 
-  const handleBack = () => {
-    navigate(`/brands/${brandId}`);
-  };
+  const getChartHeight = (hp, max) => Math.min((hp / max) * 100, 100);
+  const maxHP = Math.max(carData?.baseHP || 169, calculateFinalHP());
 
   if (loading) {
-    return (
-      <CustomizerContainer>
-        <div style={{ color: 'white', fontSize: '1.5rem' }}>Loading customizer...</div>
-      </CustomizerContainer>
-    );
+    return <PageContainer><Loading3D /></PageContainer>;
   }
 
   return (
-    <CustomizerContainer>
-      <Content>
-        <MainArea>
-          <BackButton onClick={handleBack}>
-            ← Back to Models
-          </BackButton>
-          
-          <CarTitle>{carData?.name}</CarTitle>
-          
-          <CarViewer>
-            <VehicleSpecs>
-              <SpecItem>
-                <SpecLabel>Power:</SpecLabel>
-                <SpecValue $highlight>{calculateFinalHP()} HP</SpecValue>
-              </SpecItem>
-              <SpecItem>
-                <SpecLabel>Torque:</SpecLabel>
-                <SpecValue>280 Nm</SpecValue>
-              </SpecItem>
-              <SpecItem>
-                <SpecLabel>0-60 mph:</SpecLabel>
-                <SpecValue>5.3s</SpecValue>
-              </SpecItem>
-            </VehicleSpecs>
+    <PageContainer>
+      <TopBar />
+      <MainContent>
+        <LeftSection>
+          <Header>
+            <BackButton onClick={() => navigate(`/brands/${brandId}`)}>
+              ← Back
+            </BackButton>
+            <Title>{carData?.name}</Title>
+            <PowerBadge>{calculateFinalHP()} HP</PowerBadge>
+          </Header>
 
-            <Canvas3D>
-              {use3D && modelPath && !webglLost ? (
-                <Canvas3DErrorBoundary color={selectedColor} onError={handleWebGLContextLost}>
-                  <Suspense fallback={<Loading3D />}>
-                    <Canvas 
-                      ref={canvasRef}
-                      camera={{ position: [3, 1.5, 3], fov: 45 }}
-                      gl={{ 
-                        antialias: false,
-                        alpha: false,
-                        powerPreference: "low-power",
-                        stencil: false,
-                        depth: true,
-                        failIfMajorPerformanceCaveat: false
-                      }}
-                      onCreated={({ gl, scene, camera }) => {
-                        // Ultra-conservative WebGL settings
-                        gl.setClearColor('#2a2d3a');
-                        gl.shadowMap.enabled = false;
-                        gl.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-                        
-                        // Context lost/restored handlers
-                        gl.domElement.addEventListener('webglcontextlost', (event) => {
-                          event.preventDefault();
-                          console.log('WebGL context lost detected');
-                          handleWebGLContextLost();
-                        });
-                        
-                        gl.domElement.addEventListener('webglcontextrestored', () => {
-                          console.log('WebGL context restored');
-                        });
-                        
-                        // Force garbage collection
-                        gl.info.autoReset = true;
-                      }}
-                    >
-                      {/* Minimal lighting */}
-                      <ambientLight intensity={0.8} />
-                      <directionalLight position={[2, 2, 2]} intensity={0.3} />
-                      
-                      <Car3DModel 
-                        modelPath={modelPath}
-                        color={selectedColor}
-                      />
-                      
-                      <OrbitControls 
-                        enableZoom={true}
-                        enablePan={false}
-                        autoRotate={true}
-                        autoRotateSpeed={0.2}
-                        maxPolarAngle={Math.PI / 2.2}
-                        minPolarAngle={Math.PI / 6}
-                        maxDistance={6}
-                        minDistance={2}
-                        enableDamping={false}
-                      />
-                    </Canvas>
-                  </Suspense>
-                </Canvas3DErrorBoundary>
-              ) : (
-                <CarFallback color={selectedColor} />
-              )}
-            </Canvas3D>
+          <ContentGrid>
+            <ViewerCard>
+              <StatsOverlay>
+                <StatRow>
+                  <StatLabel>Engine</StatLabel>
+                  <StatValue>{carData?.engine}</StatValue>
+                </StatRow>
+                <StatRow>
+                  <StatLabel>Power</StatLabel>
+                  <StatValue $primary>{calculateFinalHP()} HP</StatValue>
+                </StatRow>
+                <StatRow>
+                  <StatLabel>Drive</StatLabel>
+                  <StatValue>{carData?.drivetrain}</StatValue>
+                </StatRow>
+              </StatsOverlay>
 
-            {calculateTotalHPGain() > 0 && (
-              <HPGainBanner>
-                +{calculateTotalHPGain()} HP Added!
-              </HPGainBanner>
-            )}
-          </CarViewer>
-        </MainArea>
+              <Canvas3D>
+                {use3D && modelPath && !webglLost ? (
+                  <Canvas3DErrorBoundary color={selectedColor} onError={handleWebGLContextLost}>
+                    <Suspense fallback={<Loading3D />}>
+                      <Canvas 
+                        ref={canvasRef}
+                        camera={{ position: [3, 1.5, 3], fov: 45 }}
+                        gl={{ antialias: false, alpha: false }}
+                        onCreated={({ gl }) => {
+                          gl.setClearColor('#1e293b');
+                        }}
+                      >
+                        <ambientLight intensity={0.8} />
+                        <directionalLight position={[2, 2, 2]} intensity={0.3} />
+                        <Car3DModel modelPath={modelPath} color={selectedColor} />
+                        <OrbitControls 
+                          enableZoom={true}
+                          enablePan={false}
+                          autoRotate={true}
+                          autoRotateSpeed={0.3}
+                        />
+                      </Canvas>
+                    </Suspense>
+                  </Canvas3DErrorBoundary>
+                ) : (
+                  <CarFallback color={selectedColor} />
+                )}
+              </Canvas3D>
+            </ViewerCard>
 
-        <Sidebar>
-          <Section>
-            <SectionTitle>🎨 Color</SectionTitle>
-            <ColorPicker 
-              color={selectedColor}
-              onChange={setSelectedColor}
-              label="Vehicle Color"
-            />
-          </Section>
+            <ChartCard>
+              <ChartTitle>Power Analysis</ChartTitle>
+              <MiniChart>
+                <Bar $height={getChartHeight(carData?.baseHP || 169, maxHP)} $primary />
+                <Bar $height={getChartHeight(calculateFinalHP(), maxHP)} />
+              </MiniChart>
+              <ChartStats>
+                <ChartStat>
+                  <ChartStatLabel>Base</ChartStatLabel>
+                  <ChartStatValue $color="#3b82f6">{carData?.baseHP}</ChartStatValue>
+                </ChartStat>
+                <ChartStat>
+                  <ChartStatLabel>Gain</ChartStatLabel>
+                  <ChartStatValue $color="#f97316">+{calculateTotalHPGain()}</ChartStatValue>
+                </ChartStat>
+                <ChartStat>
+                  <ChartStatLabel>Total</ChartStatLabel>
+                  <ChartStatValue>{calculateFinalHP()}</ChartStatValue>
+                </ChartStat>
+              </ChartStats>
+            </ChartCard>
+          </ContentGrid>
+        </LeftSection>
 
-          <Section>
-            <SectionTitle>🔧 Modifications</SectionTitle>
-            
-            <TabContainer>
-              {Object.keys(modifications).map(category => (
-                <Tab
-                  key={category}
-                  $active={activeTab === category}
-                  onClick={() => setActiveTab(category)}
-                >
-                  {getCategoryIcon(category)} {category.charAt(0).toUpperCase() + category.slice(1)}
+        <RightSidebar>
+          <SidebarSection>
+            <SectionTitle>Paint Color</SectionTitle>
+            <SectionSubtitle>Select vehicle color</SectionSubtitle>
+            <ColorPicker color={selectedColor} onChange={setSelectedColor} />
+          </SidebarSection>
+
+          <SidebarSection>
+            <SectionTitle>Performance Upgrades</SectionTitle>
+            <SectionSubtitle>Select modifications</SectionSubtitle>
+
+            <TabsContainer>
+              {Object.keys(modifications).map(cat => (
+                <Tab key={cat} $active={activeTab === cat} onClick={() => setActiveTab(cat)}>
+                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
                 </Tab>
               ))}
-            </TabContainer>
+            </TabsContainer>
 
-            <ModificationList>
+            <ModsList>
               {modifications[activeTab]?.map(mod => (
-                <ModificationItem
+                <ModItem
                   key={mod.id}
                   $selected={selectedMods.includes(mod.id)}
                   onClick={() => toggleModification(mod.id)}
@@ -786,42 +753,39 @@ const Customizer = () => {
                   </ModInfo>
                   <ModDetails>
                     <ModHP>+{mod.hp} HP</ModHP>
-                    <ModPrice>${mod.price.toLocaleString()}</ModPrice>
+                    <ModPrice>${(mod.price/1000).toFixed(1)}k</ModPrice>
                   </ModDetails>
-                  <ToggleSwitch $active={selectedMods.includes(mod.id)} />
-                </ModificationItem>
+                  <Checkbox $checked={selectedMods.includes(mod.id)} />
+                </ModItem>
               ))}
-            </ModificationList>
-          </Section>
+            </ModsList>
+          </SidebarSection>
 
-          <Section>
-            <BuildSummary>
-              <SummaryTitle>Build Summary</SummaryTitle>
-              <SummaryRow>
-                <span>Base HP:</span>
-                <span>{carData?.baseHP || 200} HP</span>
-              </SummaryRow>
-              <SummaryRow>
-                <span>Added HP:</span>
-                <span>+{calculateTotalHPGain()} HP</span>
-              </SummaryRow>
-              <SummaryRow>
-                <span>Total Cost:</span>
-                <span>${calculateTotalCost().toLocaleString()}</span>
-              </SummaryRow>
-              <SummaryRow>
-                <span>Final Power:</span>
-                <span>{calculateFinalHP()} HP</span>
-              </SummaryRow>
-            </BuildSummary>
-
-            <SaveButton onClick={saveBuild}>
-              💾 Save Build
-            </SaveButton>
-          </Section>
-        </Sidebar>
-      </Content>
-    </CustomizerContainer>
+          <SidebarSection>
+            <SectionTitle>Build Summary</SectionTitle>
+            <SummaryGrid>
+              <SummaryItem>
+                <SummaryLabel>Base HP</SummaryLabel>
+                <SummaryValue>{carData?.baseHP}</SummaryValue>
+              </SummaryItem>
+              <SummaryItem>
+                <SummaryLabel>Added</SummaryLabel>
+                <SummaryValue $primary>+{calculateTotalHPGain()}</SummaryValue>
+              </SummaryItem>
+              <SummaryItem>
+                <SummaryLabel>Cost</SummaryLabel>
+                <SummaryValue>${(calculateTotalCost() / 1000).toFixed(1)}k</SummaryValue>
+              </SummaryItem>
+              <SummaryItem>
+                <SummaryLabel>Final HP</SummaryLabel>
+                <SummaryValue $primary>{calculateFinalHP()}</SummaryValue>
+              </SummaryItem>
+            </SummaryGrid>
+            <SaveButton onClick={saveBuild}>Save Build</SaveButton>
+          </SidebarSection>
+        </RightSidebar>
+      </MainContent>
+    </PageContainer>
   );
 };
 
